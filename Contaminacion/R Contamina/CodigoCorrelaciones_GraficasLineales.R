@@ -4,7 +4,7 @@ library(tidyverse)
 library(ggplot2)
 library(dplyr)
 library(hrbrthemes)
-CONTAMINA21<-read.csv("ContaminaDiario21_RellenadoNA.csv",sep=";",dec=",")
+CONTAMINA21<-read.csv("Contaminacion/Diario/contamina21RellenoNA.csv",sep=";",dec=",")
 
 #Vamos a crear un DataFrame para cada una de las estaciones e ir metiendo de
 #forma ordenada todos los dias del año para ver su evolucion a lo largo de este.
@@ -190,7 +190,7 @@ ggplot(data.frame(df), aes(x=dias)) +
 #Dioxido de Azufre por estaciones, ignorando la primera columna que es el id de la estacion.
 correTempVerde<-data.frame(estacion=dfFinalAZUFRE[,1], Means=rowMeans(dfFinalAZUFRE[,c(2:373)], na.rm=TRUE))
 
-estacionDistrito<-read.csv("Meteo/estacion_distrito.csv",sep=";",dec=",")
+estacionDistrito<-read.csv("Contaminacion/estacion_distrito.csv",sep=";",dec=",")
 ZonasVerdes<-read.csv("Zonas Verdes/masaArborea21.csv",sep=",",dec=".")
 #Puesto que hay más estaciones (26) ue distritos (21), tenemos que asignar a cada estacion
 #las zonas verdes de su distrito.

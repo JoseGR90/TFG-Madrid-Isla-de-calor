@@ -4,8 +4,8 @@ library(tidyr)
 library(dplyr)
 library(ggpubr)
 #Archivo con los datos a analizar
-CONTAMINA21<-read.csv("/Datos/Datos contaminacion/contamina21Final.csv",sep=";", dec=",")
-VALNA<-read.csv("/Datos/Datos contaminacion/datosInvalidosDiarios.csv",sep=";", dec=",")
+CONTAMINA21<-read.csv("Contaminacion/Diario/contamina21Final.csv",sep=";", dec=",")
+VALNA<-read.csv("Contaminacion/Diario/datosInvalidosDiarios.csv",sep=";", dec=",")
 #Vamos a calcular las distribuciones de los datos, una por cada magnitud. Primero sacamos
 #todos los valores del DF principal con 2 bucles y los insertamos en una variable.
 #Agrupamos en un dataframe y representamos esos valores en un diagrama de densidad.

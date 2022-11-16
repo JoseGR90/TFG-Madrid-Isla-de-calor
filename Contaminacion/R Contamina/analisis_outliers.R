@@ -5,7 +5,7 @@ library(ggplot2)
 library(dplyr)
 library(hrbrthemes)
 library(viridis)
-CONTAMINA21<-read.csv("Contamina/Diario/ContaminaDiario21_RellenadoNA.csv",sep=";",dec=",")
+CONTAMINA21<-read.csv("Contaminacion/Diario/contamina21RellenoNA.csv",sep=";",dec=",")
 #Este archivo es el sacado a partir de la limpieza, en el que los meses que no tienen valores
 #por fallo o mantenimiento son rellenados a NA.
 

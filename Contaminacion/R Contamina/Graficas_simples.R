@@ -1,6 +1,6 @@
 #Primer analisis
 library(tidyverse)
-CONTAMINA21<-read.csv("contaminaDiario21_RellenoNA.csv",sep=";",dec=",")
+CONTAMINA21<-read.csv("Contaminacion/Diario/contamina21RellenoNA.csv",sep=";",dec=",")
 
 #Vamos a crear un DataFrame para cada una de las estaciones e ir metiendo de
 #forma ordenada todos los dias del año para ver su evolucion a lo largo de este.

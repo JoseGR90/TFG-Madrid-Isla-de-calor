@@ -1,6 +1,6 @@
 rm(list=ls())
 #Cargamos el archivo con los datos a limpiar
-contamina21 <- read.csv("/Datos/Datos contaminacion/contaminacion21.csv",sep=";")
+contamina21 <- read.csv("Contaminacion/Limpiar/contaminacion21.csv",sep=";")
 mydata<-NULL#Dataframe en el que vamos metiendo los datos limpios
 datosInvalidos<-NULL#Dataframe que lleva el contador de datos invalidos por mes
 for (myrow in 1:nrow(contamina21)){#Nos quedamos con los datos necesarios para identificar las filas
@@ -35,5 +35,5 @@ for (myrow in 1:nrow(contamina21)){#Nos quedamos con los datos necesarios para i
 }
 contamina21Final<-mydata
 #Exportamos los datos en un csv
-write.csv2(contamina21Final, "/Datos/Datos contaminacion/contamina21Final.csv")
-write.csv2(datosInvalidos, "/Datos/Datos contaminacion/datosInvalidosDiarios.csv")
+write.csv2(contamina21Final, "Contaminacion/Diario/contamina21Final.csv")
+write.csv2(datosInvalidos, "Contaminacion/Diario/datosInvalidosDiarios.csv")
