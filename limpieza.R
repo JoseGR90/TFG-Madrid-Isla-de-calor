@@ -189,7 +189,41 @@ meteo21 <- rbind(meteo21[1:624, ], newRow, meteo21[- (1:624), ])
 ##Magnitud 87 #########################################################
 newRow <- c(4,87,2021,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA)
 meteo21 <- rbind(meteo21[1:721, ], newRow, meteo21[- (1:721), ])
+
+names(meteo21)[5] <- 'Dia1'
+names(meteo21)[6] <- 'Dia2'
+names(meteo21)[7] <- 'Dia3'
+names(meteo21)[8] <- 'Dia4'
+names(meteo21)[9] <- 'Dia5'
+names(meteo21)[10] <- 'Dia6'
+names(meteo21)[11] <- 'Dia7'
+names(meteo21)[12] <- 'Dia8'
+names(meteo21)[13] <- 'Dia9'
+names(meteo21)[14] <- 'Dia10'
+names(meteo21)[15] <- 'Dia11'
+names(meteo21)[16] <- 'Dia12'
+names(meteo21)[17] <- 'Dia13'
+names(meteo21)[18] <- 'Dia14'
+names(meteo21)[19] <- 'Dia15'
+names(meteo21)[20] <- 'Dia16'
+names(meteo21)[21] <- 'Dia17'
+names(meteo21)[22] <- 'Dia18'
+names(meteo21)[23] <- 'Dia19'
+names(meteo21)[24] <- 'Dia20'
+names(meteo21)[25] <- 'Dia21'
+names(meteo21)[26] <- 'Dia22'
+names(meteo21)[27] <- 'Dia23'
+names(meteo21)[28] <- 'Dia24'
+names(meteo21)[29] <- 'Dia25'
+names(meteo21)[30] <- 'Dia26'
+names(meteo21)[31] <- 'Dia27'
+names(meteo21)[32] <- 'Dia28'
+names(meteo21)[33] <- 'Dia29'
+names(meteo21)[34] <- 'Dia30'
+names(meteo21)[35] <- 'Dia31'
+
 write.csv2(meteo21, "Meteo/Diario/meteoDiario21_rellenadoNA.csv", row.names = FALSE)
+
 
 
 ############################################################
@@ -213,4 +247,67 @@ write.csv2(zonasVerdes, "Zonas Verdes/estadoZonasVerdes21.csv", row.names = FALS
 zonasVerdes<- read_excel("Zonas Verdes/Limpiar/Estado_ARBOLADO_ParquesHistoricoSingularesForestales_2021.xlsx")
 zonasVerdes<-zonasVerdes[-c(17:23), ]
 write.csv2(zonasVerdes, "Zonas Verdes/estadoArbolado21.csv", row.names = FALSE)
+########################################################################################
+########################################################################################
+########################################################################################
+
+rm(list=ls())
+library(tidyr)
+library(dplyr)
+library(lubridate)
+meteo21 <- read.csv("Meteo/Diario/meteoDiario21_RellenadoNA.csv",sep=";")
+#Rellenamos fechas
+Fecha<-data.frame(seq(as.Date("2021-1-1"), as.Date("2021-12-31"), by="days"))
+dfFin<-cbind(Fecha)
+names(dfFin)[1] <- 'Fecha'
+#Separamos fechas
+splitFech<-do.call("rbind", strsplit(as.character(dfFin$Fecha), "-", fixed = TRUE))
+dfFin<-cbind(dfFin, splitFech)
+names(dfFin)[2] <- 'Ano'
+names(dfFin)[3] <- 'Mes'
+names(dfFin)[4] <- 'Dia'
+#Pasamos de char a double
+dfFin$Ano <- as.numeric(as.character(dfFin$Ano))
+dfFin$Mes <- as.numeric(as.character(dfFin$Mes))
+dfFin$Dia <- as.numeric(as.character(dfFin$Dia))
+#Rellenamos las magnitudes
+dfMag<-NULL
+for(x in 1:7){
+  colu<-rep(NA, 365)
+  dfMag<-cbind(dfMag,colu)
+}
+dfMag<-data.frame(dfMag)
+names(dfMag)[1] <- '81'
+names(dfMag)[2] <- '82'
+names(dfMag)[3] <- '83'
+names(dfMag)[4] <- '86'
+names(dfMag)[5] <- '87'
+names(dfMag)[6] <- '88'
+names(dfMag)[7] <- '89'
+
+Estacion<-rep(102, 365)
+#Juntamos
+dfFin<-cbind(dfFin,Estacion,dfMag)
+#Rellenamos el dataframe final con los datos
+magnitudes<-unique(meteo21$magnitud)
+
+i<-4#En meteo los dias empiezan a partir de la 4 columna
+for(x in 1:nrow(dfFin)){#Recorremos el df a rellenar
+  myvecofmags<-NULL#Almacenamos en esta lista los 7 valores corresponcientes a las magnitudes
+  for(mag in 1: length(magnitudes)){#Vamos a buscar cada una de las magnitudes
+    mymag<-magnitudes[mag]
+    #Esta sentencia lo que hace es confirmar si es un valor o si no existe en meteo21. 
+    #Coge el valor correspondiente a la fila magnitud, estacion y mes, en la columna del dia+4, ya que en el formato de meteo21 los dias empiezan a partir de dicha columna.
+    if(identical(meteo21[((meteo21$magnitud==mymag)&(meteo21$estacion==dfFin[x,]$Estacion) &(meteo21$mes==dfFin[x,]$Mes)),dfFin[x,]$Dia+i], integer(0))){
+      #Si no existe insertamos NA
+      myvecofmags<-c(myvecofmags,NA)
+     }
+    else{
+      myvecofmags<-c(myvecofmags,meteo21[((meteo21$magnitud==mymag)&(meteo21$estacion==dfFin[x,]$Estacion) &(meteo21$mes==dfFin[x,]$Mes)),dfFin[x,]$Dia+i])
+      
+    }
+  }
+  #Ponemos los valores del vector en su posiciony
+  dfFin[x,c(6:12)]<-myvecofmags
+}
 
