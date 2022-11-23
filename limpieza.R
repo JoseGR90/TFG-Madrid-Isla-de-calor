@@ -224,8 +224,6 @@ names(meteo21)[35] <- 'Dia31'
 
 write.csv2(meteo21, "Meteo/Diario/meteoDiario21_rellenadoNA.csv", row.names = FALSE)
 
-
-
 ############################################################
 ############################################################
 ############################################################
@@ -247,10 +245,11 @@ write.csv2(zonasVerdes, "Zonas Verdes/estadoZonasVerdes21.csv", row.names = FALS
 zonasVerdes<- read_excel("Zonas Verdes/Limpiar/Estado_ARBOLADO_ParquesHistoricoSingularesForestales_2021.xlsx")
 zonasVerdes<-zonasVerdes[-c(17:23), ]
 write.csv2(zonasVerdes, "Zonas Verdes/estadoArbolado21.csv", row.names = FALSE)
-########################################################################################
-########################################################################################
-########################################################################################
 
+############################################################
+############################################################
+############################################################
+############################################################
 rm(list=ls())
 library(tidyr)
 library(dplyr)
@@ -284,13 +283,31 @@ names(dfMag)[4] <- '86'
 names(dfMag)[5] <- '87'
 names(dfMag)[6] <- '88'
 names(dfMag)[7] <- '89'
-
-Estacion<-rep(102, 365)
+#Puesto que hay 26 estacionesvamos a insertar 25 veces mas.
+a<-dfFin
+b<-dfMag
+estaciones<-unique(meteo21$estacion)
+rep<-length(estaciones)-1
+for(i in 1:rep){
+  dfFin<-rbind(dfFin, a)
+  dfMag<-rbind(dfMag, b)
+}
+Estacion<-rep(NA, 365*length(estaciones)) #365*26
 #Juntamos
 dfFin<-cbind(dfFin,Estacion,dfMag)
+#Rellenamos con las estaciones
+init<-1
+fin<-365
+for(i in 1:length(estaciones)){
+  est<-rep(estaciones[i], 365) #365*26
+  dfFin[c(init:fin),]$Estacion<-est
+  init<-init+365
+  fin<-fin+365
+}
+
+
 #Rellenamos el dataframe final con los datos
 magnitudes<-unique(meteo21$magnitud)
-
 i<-4#En meteo los dias empiezan a partir de la 4 columna
 for(x in 1:nrow(dfFin)){#Recorremos el df a rellenar
   myvecofmags<-NULL#Almacenamos en esta lista los 7 valores corresponcientes a las magnitudes
@@ -298,10 +315,10 @@ for(x in 1:nrow(dfFin)){#Recorremos el df a rellenar
     mymag<-magnitudes[mag]
     #Esta sentencia lo que hace es confirmar si es un valor o si no existe en meteo21. 
     #Coge el valor correspondiente a la fila magnitud, estacion y mes, en la columna del dia+4, ya que en el formato de meteo21 los dias empiezan a partir de dicha columna.
-    if(identical(meteo21[((meteo21$magnitud==mymag)&(meteo21$estacion==dfFin[x,]$Estacion) &(meteo21$mes==dfFin[x,]$Mes)),dfFin[x,]$Dia+i], integer(0))){
+    if(identical(meteo21[((meteo21$magnitud==mymag)&(meteo21$estacion==dfFin[x,]$Estacion) &(meteo21$mes==dfFin[x,]$Mes)),dfFin[x,]$Dia+i], character(0))){
       #Si no existe insertamos NA
       myvecofmags<-c(myvecofmags,NA)
-     }
+    }
     else{
       myvecofmags<-c(myvecofmags,meteo21[((meteo21$magnitud==mymag)&(meteo21$estacion==dfFin[x,]$Estacion) &(meteo21$mes==dfFin[x,]$Mes)),dfFin[x,]$Dia+i])
       
@@ -311,3 +328,6 @@ for(x in 1:nrow(dfFin)){#Recorremos el df a rellenar
   dfFin[x,c(6:12)]<-myvecofmags
 }
 
+
+#Exportamos el nuevo dataframe
+write.csv2(dfFin, "Meteo/Diario/meteoDiario21_byDay.csv", row.names = FALSE)
