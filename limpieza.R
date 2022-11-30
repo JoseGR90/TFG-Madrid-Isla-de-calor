@@ -331,3 +331,25 @@ for(x in 1:nrow(dfFin)){#Recorremos el df a rellenar
 
 #Exportamos el nuevo dataframe
 write.csv2(dfFin, "Meteo/Diario/meteoDiario21_byDay.csv", row.names = FALSE)
+
+
+############################################################################################
+############################################################################################
+############################################################################################
+############################################################################################
+############################################################################################
+#Ahora vamos a unir los dataframes de contaminacion y meteorologia.
+rm(list=ls())
+meteo21<- read.csv("Meteo/Diario/meteoDiario21_byDay.csv",sep=";")
+contaminacion21<- read.csv("Contaminacion/Diario/contaminaDiario21_byDay.csv",sep=";")
+dfAll<-merge(contaminacion21,meteo21, by=c("Fecha","Estacion", "Ano", "Mes", "Dia"),all=TRUE)
+dfFinal<-dfAll[order(dfAll$Estacion),-c(7,8)]
+
+#Exportamos el dataframe final
+write.csv2(dfFinal, "Datos Finales/datos21_byDay.csv", row.names = FALSE)
+
+
+
+
+
+
