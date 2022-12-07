@@ -4,44 +4,7 @@ library(imputeR)
 #Cargamos los datos que hemos limpiado y los cuales hemos dado formato.
 allData<-read.csv("Datos Finales/datos21_byDay.csv",sep=";",dec=",")
 meteo21<-read.csv("Meteo/Diario/meteoDiario21_byDay.csv",sep=";", dec=",")
-#KMeans
-#Puesto que desde el portal de datos del ayuntamiento hay numerosos valores nulos y este algoritmo
-#requiere que sean datos cuantitativos, es decir no puden haber NA, hemos decidido 
-#imputar datos la mediana de los datos. 
-#https://www.uv.es/webgid/Descriptiva/23_valores_faltantes.html
-#Problemas-> como faltan una cantidad increible de datos, creo que es mejor idea hacer el kmeans
-#por cada dataframe, es decir, un kmeans por contaminacion y otro por meteorologia.
-for(i in 6:ncol(meteo21)) {
-  meteo21[,i][is.na(meteo21[,i])]<-median(meteo21[,i],na.rm=TRUE)
-}
-#Una vez que tenemos rellenado el dataframe al completo escalamos los datos
-myKmeans<-data.frame(scale(meteo21[,6:12]))
-library(cluster)
-library(factoextra)
-#Ahora vamos a calcular el numero optimo de clusters para el kMeans
-#Para ello recurrimos al diagrama del codo.
-fviz_nbclust(myKmeans, kmeans, method = "wss")#Tarda en ejecutarse; el "codo" se encuentra en 3 clusters, por lo que lo ejecutamos tal que asi.
-set.seed(123)
-#Analizar si esta bien con 3 clusters, 2 grupos muy grandes y uno muy pequeño.
-kmeansResults<-kmeans(myKmeans, centers=3)
-#Inercia entre grupos, nos dice la varianza entre los grupos, cuanto mayor mejor es la clasificación. Valor a maximizar.
-kmeansResults$betweenss
-#Inercia intragrupos, nos indica como de agrupados esta cada punto dentro de cada grupo, cuanto menor, mejor.
-kmeansResults$withinss
-#Inercia total intragrupos, es un valor a minimizar, cuanto menor es mejor.
-kmeansResults$tot.withinss
-
-fecha<-meteo21$Fecha
-estacion<-meteo21$Estacion
-fechEst<-paste(meteo21$Fecha,meteo21$Estacion)
-grupo<-kmeansResults$cluster
-datosRepresentacion<-data.frame(fechEst, grupo)
-
-library(ggplot2)
-#Se ve basatante mal.
-ggplot(datosRepresentacion)+
-  geom_point(mapping=aes(x=fechEst, y=grupo), color=grupo, size=1)
-
+contaminacion21<-read.csv("Contaminacion/Diario/contaminaDiario21_byDay.csv",sep=";", dec=",")
 
 
 
@@ -59,8 +22,8 @@ names(meteo21)[10]<-"Presion"
 names(meteo21)[11]<-"Solar"
 names(meteo21)[12]<-"Precipitacion"
 
-Estacioncontaminacion<-group_by(meteo21, Estacion)
-Estacioncontaminacion<-summarize(Estacioncontaminacion, count=n(),
+EstacionMeteo<-group_by(meteo21, Estacion)
+EstacionMeteo<-summarize(EstacionMeteo, count=n(),
                                  Radiacion=median(Radiacion, na.rm=T),
                                  Viento=median(Viento, na.rm=T),
                                  Temperatura=median(Temperatura, na.rm=T),
@@ -68,14 +31,113 @@ Estacioncontaminacion<-summarize(Estacioncontaminacion, count=n(),
                                  Presion=median(Presion,na.rm = T),
                                  Solar=median(Solar, na.rm=T),
                                  Precipitacion=median(Precipitacion,na.rm = T))
+#########CLUSTERING MST
+
+porEstacions<-hclust(dist(EstacionMeteo,method="euclidean"),method="single")
+plot(porEstacions)
+plot(hclust(dist(EstacionMeteo,method="euclidean"),method="single"))
+
+# AGRUPACION DE LOS DATOS POR Estaciones 
+#agrupamos por estaciones, se obtienen los casos totales
+library(dplyr)
+names(contaminacion21)
+names(contaminacion21)[6]<-"Azufre"
+names(contaminacion21)[7]<-"Nitrogeno"
+names(contaminacion21)[8]<-"Particulas2.5"
+names(contaminacion21)[9]<-"Particulas10"
+names(contaminacion21)[10]<-"Ozono"
 
 
+Estacioncontaminacion<-group_by(contaminacion21, Estacion)
+Estacioncontaminacion<-summarize(Estacioncontaminacion, count=n(),
+                                   Azufre=sum(Azufre, na.rm=T),
+                                   Nitrogeno=sum(Nitrogeno, na.rm=T),
+                                   Particulas2.5=sum(Particulas2.5, na.rm=T),
+                                   Particulas10=sum(Particulas10, na.rm=T),
+                                   Ozono=sum(Ozono,na.rm = T))
 
 
-#QUINTA PARTE ***CLUSTERING MST
+#########CLUSTERING MST
 
 porEstacions<-hclust(dist(Estacioncontaminacion,method="euclidean"),method="single")
 plot(porEstacions)
 plot(hclust(dist(Estacioncontaminacion,method="euclidean"),method="single"))
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#########CLUSTERING K-Vecinos
+
+install.packages("rpart.plot")
+install.packages("useful")
+install.packages("randomForest")
+
+
+# Para representar gráficamente la relación entre variables
+library("ggplot2")
+# Para clasificar con K-NN
+library("class")
+# Para clasificar con rpart
+library("rpart")
+library("rpart.plot")
+# Para clasificar con randomForest
+library("useful")
+library("randomForest")
+
+# 1.Calculamos los descriptivos univariables de las variables del fichero
+summary(contaminacion21)
+
+# 2.Representamos gráficamente las variables del fichero mediante histogramas
+
+#Histograma Ozono
+f1 <- hist(contaminacion21$Ozono, main="Histograma Ozono", col = "gray", labels = TRUE) 
+
+#Histograma Azufre
+f2 <- hist(contaminacion21$Azufre, main="Histograma Azufre", col = "gray", labels = TRUE) 
+
+#Histograma Particulas10
+f3 <- hist(contaminacion21$Particulas10, main="Histograma Particulas10", col = "gray", labels = TRUE) 
+
+
+
+
+# Estudiamos la relación entre variables mediante gráficos de dispersión
+f7<-ggplot(contaminacion21, aes(x=Ozono, y=Azufre)) + geom_point()
+f7
+
+
+# 3.Estudiamos la existencia de diferencias por estaciones
+
+# promedio variables por estacion 
+tapply(contaminacion21$Ozono,contaminacion21$Estacion,mean)
+
+# Relación entre variables Ozono y Particulas con tamaño Temperatura y Color según Estacion
+#f10<-ggplot(contaminacion21, aes(x=Ozono, y=Particulas10, color=Estacioncontaminacion)) + geom_point(aes(size=meteo21.Temperatura))
+#f10
+
+
+
+# Dividimos el fichero en 70% entreno y 30% validación  #
+set.seed(1234)
+ind <- sample(2, nrow(contaminacion21), replace=TRUE, prob=c(0.7, 0.3))
+trainData <- contaminacion21[ind==1,]
+testData <- contaminacion21[ind==2,]
+
+# Aplicamos el algoritmo K-NN seleccionando 1 como k inicial
+KnnTestPrediccion_k1 <- knn(trainData[,5:10],testData[,5:10], trainData$Estacion , k = 5, prob = TRUE )
+# Visualizamos una matriz de confusión
+table ( testData$Estacion , KnnTestPrediccion_k1 )
