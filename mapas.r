@@ -6,7 +6,7 @@ library(sp)
 library(ggmap)
 library(rgdal)
 library(readxl)
-
+asocNombresNum<-read.csv("Meteo/estacion_distrito.csv",sep=";", dec=",")
 estacionesControl <- read_excel("Meteo/Estaciones_control_datos_meteorologicos.xls")
 estCon<-estacionesControl[,c(2,3, 20, 21)]
 estCon$COORDENADA_X_ETRS89<-as.numeric(estCon$COORDENADA_X_ETRS89)
@@ -45,6 +45,20 @@ for(myrow in 1:nrow(aprox3)){#rellenamos coordenadas
 }
 
 
+Estacion<-c(102, 103, 106, 107, 109, 110, 112, 8, 24, 35, 36, 38, 54, 56, 58, 59)
+mimapa<-NULL
+Nombre<-rep(NA,length(Estacion))
+x<-rep(NA,length(Estacion))
+y<-rep(NA,length(Estacion))
+mimapa<-data.frame(cbind(Nombre, Estacion, x, y))
+for(myrow in 1:nrow(mimapa)){#rellenamos coordenadas
+  myx<-estCon[estCon$CÓDIGO_CORTO==mimapa[myrow,]$Estacion,]$COORDENADA_X_ETRS89
+  myy<-estCon[estCon$CÓDIGO_CORTO==mimapa[myrow,]$Estacion,]$COORDENADA_Y_ETRS89
+  mimapa[myrow,]$x<-myx
+  mimapa[myrow,]$y<-myy
+  mimapa[myrow,]$Nombre<-asocNombresNum[asocNombresNum$ESTACION==mimapa[myrow,]$Estacion,]$NombreEstacion
+}
+
 
 getinfo.shape("Mapas/Barrios/200001909.shp")
 
@@ -59,6 +73,11 @@ plot(barriosMadrid)
 #Enseña barrios en vez de distritos
 #distritosMadrid <- readShapePoly("Mapas/Barrios/200001909.shp",proj4string = ED50)
 #plot(distritosMadrid)
+
+coordinates(mimapa) <- c("x","y")
+proj4string(mimapa)<-ED50
+plot(barriosMadrid)
+plot(mimapa, pch=20, cex=1,col="red", add=TRUE)
 
 
 #Visualizacion de los resultados de la aproximacion 1

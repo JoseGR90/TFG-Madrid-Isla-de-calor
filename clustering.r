@@ -183,7 +183,7 @@ rm(list=ls())
 #Estas son las 12 estaciones que cumplen los requisitos
 meteo21<-read.csv("Meteo/Diario/meteoDiario21_byDay.csv",sep=";", dec=",")
 asocNombresNum<-read.csv("Meteo/estacion_distrito.csv",sep=";", dec=",")
-vecEst<-c(18,24,36,38,54,58,59,102,103,106,107)
+vecEst<-c(8,18,24,36,38,54,58,59,102,103,106,107)
 sapply(meteo21, function(x) sum(is.na(x)))
 dfThird<-subset(meteo21,meteo21$Estacion %in% vecEst)
 #Quitamos las magnitudes que no nos interesan
@@ -200,7 +200,7 @@ for(estacion in unique(dfThird$Estacion)){
 }
 dfMeans<-data.frame(dfMeans)
 names(dfMeans)[1] <- 'Estacion'
-Nombre<-rep(NA,11)
+Nombre<-rep(NA,12)
 dfMeans<-cbind(Nombre,dfMeans)
 for(myrow in 1:nrow(dfMeans)){#añadimos el nombre a la estacion
   dfMeans[myrow,]$Nombre<-asocNombresNum[asocNombresNum$ESTACION==dfMeans[myrow,]$Estacion,]$NombreEstacion
@@ -209,21 +209,21 @@ for(myrow in 1:nrow(dfMeans)){#añadimos el nombre a la estacion
 
 zonasVerdes<-read.csv("Zonas Verdes/masaArborea21.csv",sep=";", dec=",")
 #Rellenamos con los datos sobre superficie arborea
-superficie<-rep(NA,11)
+superficie<-rep(NA,12)
 dfMeans<-cbind(dfMeans,superficie)
 for(myrow in 1:nrow(dfMeans)){
   mydistr<-asocNombresNum[asocNombresNum$ESTACION==dfMeans[myrow,]$Estacion,]$DISTRITO
   dfMeans[myrow,]$superficie<-zonasVerdes[zonasVerdes$NumDistr==mydistr,]$Superficiem2
 }
 
-
+dfMeans[dfMeans$Estacion==8,]$superficie<-350000 #Acorde a lo encontrado en google
 #KMeans
 #Una vez que tenemos rellenado el dataframe al completo escalamos los datos
 myKmeans<-data.frame(scale(dfMeans[3:4]))
 
 #Ahora vamos a calcular el numero optimo de clusters para el kMeans
 #Para ello recurrimos al diagrama del codo.
-fviz_nbclust(myKmeans, kmeans, method = "wss")#Recomendacion de 3 clusters
+fviz_nbclust(myKmeans, kmeans, method = "wss")#Recomendacion de 4 clusters
 set.seed(123)
 #Establecemos 3 clusters
 kmeansResults<-kmeans(myKmeans, centers=4)
