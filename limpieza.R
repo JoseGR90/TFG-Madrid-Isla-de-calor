@@ -224,27 +224,6 @@ names(meteo21)[35] <- 'Dia31'
 
 write.csv2(meteo21, "Meteo/Diario/meteoDiario21_rellenadoNA.csv", row.names = FALSE)
 
-############################################################
-############################################################
-############################################################
-############################################################
-rm(list=ls())
-library(readxl)
-zonasVerdes<- read_excel("Zonas Verdes/Limpiar/MasasZonasVerdesDistritosCalles_2021.xlsx")
-zonasVerdes<-zonasVerdes[-c(22:30), ]
-colnames(zonasVerdes)[1] <- "NumDistr"
-colnames(zonasVerdes)[4] <- "NumMasas"
-colnames(zonasVerdes)[5] <- "Superficiem2"
-colnames(zonasVerdes)[6] <- "Superficieha"
-write.csv2(zonasVerdes, "Zonas Verdes/masaArborea21.csv", row.names = FALSE)
-
-zonasVerdes<- read_excel("Zonas Verdes/Limpiar/EstadoZonasVerdesDistritosCalles_2021.xlsx")
-zonasVerdes<-zonasVerdes[-c(22:33), ]
-write.csv2(zonasVerdes, "Zonas Verdes/estadoZonasVerdes21.csv", row.names = FALSE)
-
-zonasVerdes<- read_excel("Zonas Verdes/Limpiar/Estado_ARBOLADO_ParquesHistoricoSingularesForestales_2021.xlsx")
-zonasVerdes<-zonasVerdes[-c(17:23), ]
-write.csv2(zonasVerdes, "Zonas Verdes/estadoArbolado21.csv", row.names = FALSE)
 
 ############################################################
 ############################################################
@@ -347,6 +326,28 @@ dfFinal<-dfAll[order(dfAll$Estacion),-c(7,8)]
 
 #Exportamos el dataframe final
 write.csv2(dfFinal, "Datos Finales/datos21_byDay.csv", row.names = FALSE)
+
+############################################################
+############################################################
+############################################################
+############################################################
+rm(list=ls())
+library(readxl)
+zonasVerdes<- read_excel("Zonas Verdes/Limpiar/MasasZonasVerdesDistritosCalles_2021.xlsx")
+zonasVerdes<-zonasVerdes[-c(22:30), ]
+colnames(zonasVerdes)[1] <- "NumDistr"
+colnames(zonasVerdes)[4] <- "NumMasas"
+colnames(zonasVerdes)[5] <- "Superficiem2"
+colnames(zonasVerdes)[6] <- "Superficieha"
+write.csv2(zonasVerdes, "Zonas Verdes/masaArborea21.csv", row.names = FALSE)
+
+zonasVerdes<- read_excel("Zonas Verdes/Limpiar/EstadoZonasVerdesDistritosCalles_2021.xlsx")
+zonasVerdes<-zonasVerdes[-c(22:33), ]
+write.csv2(zonasVerdes, "Zonas Verdes/estadoZonasVerdes21.csv", row.names = FALSE)
+
+zonasVerdes<- read_excel("Zonas Verdes/Limpiar/Estado_ARBOLADO_ParquesHistoricoSingularesForestales_2021.xlsx")
+zonasVerdes<-zonasVerdes[-c(17:23), ]
+write.csv2(zonasVerdes, "Zonas Verdes/estadoArbolado21.csv", row.names = FALSE)
 
 
 

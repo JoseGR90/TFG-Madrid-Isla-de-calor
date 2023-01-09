@@ -110,3 +110,52 @@ coordinates(mimapa) <- c("x","y")
 proj4string(mimapa)<-ED50
 plot(barriosMadrid)
 plot(mimapa, pch=20, cex=1,col="red", add=TRUE)
+
+
+
+#representamos en un mapa las estaciones de las que disponemos datos
+mirep<-asocNombresNum
+disponibles<-rep(NA,nrow(asocNombresNum))
+mirep<-cbind(asocNombresNum,disponibles)
+#2-> disponemos de más de la mitad de los datos
+#1-> no disponemos
+mirep[1,]$disponibles<-1
+mirep[2,]$disponibles<-1
+mirep[3,]$disponibles<-1
+mirep[4,]$disponibles<-1
+mirep[5,]$disponibles<-2 
+mirep[6,]$disponibles<-1  
+mirep[7,]$disponibles<-1
+mirep[8,]$disponibles<-1
+mirep[9,]$disponibles<-1
+mirep[10,]$disponibles<-2
+mirep[11,]$disponibles<-2
+mirep[12,]$disponibles<-1
+mirep[13,]$disponibles<-2
+mirep[14,]$disponibles<-2 
+mirep[15,]$disponibles<-2
+mirep[16,]$disponibles<-1
+mirep[17,]$disponibles<-2
+mirep[18,]$disponibles<-2
+mirep[19,]$disponibles<-1
+mirep[20,]$disponibles<-1
+mirep[21,]$disponibles<-1
+mirep[22,]$disponibles<-1
+mirep[23,]$disponibles<-1
+mirep[24,]$disponibles<-1
+mirep[25,]$disponibles<-1
+mirep[26,]$disponibles<-1
+
+x<-rep(NA,nrow(mirep))
+y<-rep(NA,nrow(mirep))
+mirep<-cbind(mirep, x, y)
+for(myrow in 1:nrow(mirep)){#rellenamos coordenadas
+  myx<-estCon[estCon$CÓDIGO_CORTO==mirep[myrow,]$ESTACION,]$LONGITUD
+  myy<-estCon[estCon$CÓDIGO_CORTO==mirep[myrow,]$ESTACION,]$LATITUD
+  mirep[myrow,]$x<-myx
+  mirep[myrow,]$y<-myy
+}
+
+ggmap(mad_map)+geom_point(data=mirep, aes(x = x , y = y),colour=mirep$disponibles, size=3)+
+  geom_text(data=mirep,aes(x = x , y = y,label = NombreEstacion), vjust = 1.5, hjust = 0.5, size=1.75)
+
