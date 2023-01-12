@@ -267,3 +267,98 @@ write.csv2(datosRepresentacion, "Mapas/Clustering/aprox3.csv", row.names = FALSE
 
 
 
+
+##############4ª Aproximacion: 
+###############################################KMEANS
+contamina21<-read.csv("Contaminacion/Diario/contaminaDiario21_byDay.csv",sep=";", dec=",")
+asocNombresNum<-read.csv("Contaminacion/estacion_distrito.csv",sep=";", dec=",")
+
+#Puesto que hay muchas estaciones de las cuales tenemos bastantes nulos, vamos a realizar distintas
+#aproximaciones dado el dataset que conseguimos del Ayuntamiento de Madrid
+
+#1ª aproximacion: hay varias estaciones de las cuales disponemos minimo 3 de las 5 magnitudes
+# 8, 18, 24, 35, 36, 38,47,48,50,56,57,60
+vecEst<-c(4,8, 18, 24, 35, 36, 38, 47, 48, 50, 56, 57, 60)
+sapply(contamina21, function(x) sum(is.na(x)))
+dfFirst<-subset(contamina21,contamina21$Estacion %in% vecEst)
+sapply(dfFirst, function(x) sum(is.na(x)))
+#Quitamos las magnitudes 8 y 9 que tienen muchos NA
+dfFirst<-dfFirst[,-c(7,8,9)]
+
+
+#Ahora por estacion vamos a sacar la media de sus magnitudes.
+dfMeans<-NULL#dataframe con las medias de las magnitudes de cada estacion
+for(estacion in unique(dfFirst$Estacion)){
+  estMean<-NULL
+  a<-dfFirst[dfFirst$Estacion==estacion, ]
+  estMean<-colMeans(a[5:7], na.rm=TRUE)
+  dfMeans<-rbind(dfMeans,c(estacion,estMean))
+}
+dfMeans<-data.frame(dfMeans)
+names(dfMeans)[1] <- 'Estacion'
+Nombre<-rep(NA,13)
+dfMeans<-cbind(Nombre,dfMeans)
+for(myrow in 1:nrow(dfMeans)){#añadimos el nombre a la estacion
+  dfMeans[myrow,]$Nombre<-asocNombresNum[asocNombresNum$ESTACION==dfMeans[myrow,]$Estacion,]$X
+}
+
+
+#Kmeans
+#Una vez que tenemos rellenado el dataframe al completo escalamos los datos
+myKmeans<-data.frame(scale(dfMeans[3:5]))
+#Ahora vamos a calcular el numero optimo de clusters para el kMeans
+#Para ello recurrimos al diagrama del codo.
+#fviz_nbclust(myKmeans, kmeans, method = "wss")#No funciona ya que se generan mas centros de clusters que filas.
+set.seed(123)
+#Establecemos 2 clusters
+
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+#AQUI ME FALLA POR QUE SE METEN VALORES NA EN myKmeans y no consigo sacar por que
+##################################################################################
+##################################################################################
+##################################################################################
+##################################################################################
+
+kmeansResults<-kmeans(na.omit(myKmeans), centers=2) #aqui omitiendo na no me falla pero me falla mas abajo
+#Inercia entre grupos, nos dice la varianza entre los grupos, cuanto mayor mejor es la clasificación. Valor a maximizar.
+kmeansResults$betweenss
+#Inercia intragrupos, nos indica como de agrupados esta cada punto dentro de cada grupo, cuanto menor, mejor.
+kmeansResults$withinss
+#Inercia total intragrupos, es un valor a minimizar, cuanto menor es mejor.
+kmeansResults$tot.withinss
+
+estacion<-dfMeans$Nombre
+numEst<-dfMeans$Estacion
+grupoKmeans<-kmeansResults$cluster
+datosRepresentacion<-data.frame(estacion, numEst, grupoKmeans) #aqui me falla por que al omitir los NA son de tamaño diferente
+
+ggplot(datosRepresentacion)+
+  geom_point(mapping=aes(x=grupoKmeans, y=estacion), color=grupoKmeans, size=1)
+#grupo 1 --> 
+
+
+#Hierarchical Clustering 
+dfMeansNames <- dfMeans[,-1]
+rownames(dfMeansNames) <- dfMeans[,1]
+dd <- dist(dfMeansNames[,2:3], method = "euclidean")
+hc <- hclust(dd, method = "ward.D2")
+plot(hc,hang = -1, cex = 0.4)
+grupoJerarquico <- cutree(hc, k = 4)
+plot(hc, cex = 0.6) # plot tree
+rect.hclust(hc, k = 4, border = 2:5) # add rectangle
+datosRepresentacion<-cbind(datosRepresentacion,grupoJerarquico)
+#En este dendograma y con la ayuda de la localizacion de las estaciones se ven relaciones
+#Rojo --> Madrid sur colindante con la m40
+#Verde --> Madrid exterior, fuera de la m40
+#Azul oscuro --> Juancarlos I, parque en el exterior, poco efecto isla calor
+#Azul claro --> Madrid norte, colindante a la m40
+
+#Exportamos lo sresultados del clustering
+write.csv2(datosRepresentacion, "Mapas/Clustering/aprox1.csv", row.names = FALSE)
+
+
+
+###########################################FIN 4ª Aproximacion
