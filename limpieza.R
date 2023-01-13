@@ -544,13 +544,6 @@ colnames(zonasVerdes)[5] <- "Superficiem2"
 colnames(zonasVerdes)[6] <- "Superficieha"
 write.csv2(zonasVerdes, "Zonas Verdes/masaArborea21.csv", row.names = FALSE)
 
-zonasVerdes<- read_excel("Zonas Verdes/Limpiar/EstadoZonasVerdesDistritosCalles_2021.xlsx")
-zonasVerdes<-zonasVerdes[-c(22:33), ]
-write.csv2(zonasVerdes, "Zonas Verdes/estadoZonasVerdes21.csv", row.names = FALSE)
-
-zonasVerdes<- read_excel("Zonas Verdes/Limpiar/Estado_ARBOLADO_ParquesHistoricoSingularesForestales_2021.xlsx")
-zonasVerdes<-zonasVerdes[-c(17:23), ]
-write.csv2(zonasVerdes, "Zonas Verdes/estadoArbolado21.csv", row.names = FALSE)
 
 
 

@@ -7,13 +7,23 @@ library(ggmap)
 library(rgdal)
 library(readxl)
 asocNombresNum<-read.csv("Meteo/estacion_distrito.csv",sep=";", dec=",")
+#Estaciones de control meteo
 estacionesControl <- read_excel("Meteo/Estaciones_control_datos_meteorologicos.xls")
 estCon<-estacionesControl[,c(2,3, 20, 21)]
+
+#estaciones de control contaminacion
+estacionesControlContaminacion <- read_excel("Contaminacion/informacion_estaciones_red_calidad_aire.xls")
+estConContaminacion<-estacionesControlContaminacion[,c(2,3, 22, 23)]
+
 estCon$COORDENADA_X_ETRS89<-as.numeric(estCon$COORDENADA_X_ETRS89)
 estCon$COORDENADA_Y_ETRS89<-as.numeric(estCon$COORDENADA_Y_ETRS89)
+estConContaminacion$COORDENADA_X_ETRS89<-as.numeric(estCon$COORDENADA_X_ETRS89)
+estConContaminacion$COORDENADA_Y_ETRS89<-as.numeric(estCon$COORDENADA_Y_ETRS89)
 aprox1 <- read.csv("Mapas/Clustering/aprox1.csv",sep=";")
 aprox2 <- read.csv("Mapas/Clustering/aprox2.csv",sep=";")
 aprox3 <- read.csv("Mapas/Clustering/aprox3.csv",sep=";")
+aprox4 <- read.csv("Mapas/Clustering/aprox4.csv",sep=";")
+
 x<-rep(NA,8)
 y<-rep(NA,8)
 aprox1<-cbind(aprox1, x, y)
@@ -34,8 +44,8 @@ for(myrow in 1:nrow(aprox2)){#rellenamos coordenadas
   aprox2[myrow,]$y<-myy
 }
 
-x<-rep(NA,11)
-y<-rep(NA,11)
+x<-rep(NA,12)
+y<-rep(NA,12)
 aprox3<-cbind(aprox3, x, y)
 for(myrow in 1:nrow(aprox3)){#rellenamos coordenadas
   myx<-estCon[estCon$CÓDIGO_CORTO==aprox3[myrow,]$numEst,]$COORDENADA_X_ETRS89
@@ -44,6 +54,15 @@ for(myrow in 1:nrow(aprox3)){#rellenamos coordenadas
   aprox3[myrow,]$y<-myy
 }
 
+x<-rep(NA,24)
+y<-rep(NA,24)
+aprox4<-cbind(aprox4, x, y)
+for(myrow in 1:nrow(aprox4)){#rellenamos coordenadas
+  myx<-estConContaminacion[estConContaminacion$CODIGO_CORTO==aprox4[myrow,]$numEst,]$COORDENADA_X_ETRS89
+  myy<-estConContaminacion[estConContaminacion$CODIGO_CORTO==aprox4[myrow,]$numEst,]$COORDENADA_Y_ETRS89
+  aprox4[myrow,]$x<-myx
+  aprox4[myrow,]$y<-myy
+}
 
 Estacion<-c(102, 103, 106, 107, 109, 110, 112, 8, 24, 35, 36, 38, 54, 56, 58, 59)
 mimapa<-NULL

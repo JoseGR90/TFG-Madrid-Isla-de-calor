@@ -1,5 +1,3 @@
-#https://wiki.openstreetmap.org/wiki/Map_features#Others
-
 #cargamos las librerías
 rm(list=ls())
 library(ggplot2)
@@ -21,10 +19,21 @@ estacionesControl <- read_excel("Meteo/Estaciones_control_datos_meteorologicos.x
 estCon<-estacionesControl[,c(2,3,20,21,22,23)]
 estCon$LONGITUD<-as.numeric(estCon$LONGITUD)
 estCon$LATITUD<-as.numeric(estCon$LATITUD)
+
+#estaciones de control contaminacion
+estacionesControlContaminacion <- read_excel("Contaminacion/informacion_estaciones_red_calidad_aire.xls")
+estConContaminacion<-estacionesControlContaminacion[,c(2,3, 22, 23, 24, 25)]
+estConContaminacion$LONGITUD<-as.numeric(estConContaminacion$LONGITUD)
+estConContaminacion$LATITUD<-as.numeric(estConContaminacion$LATITUD)
+
 aprox1 <- read.csv("Mapas/Clustering/aprox1.csv",sep=";")
 aprox2 <- read.csv("Mapas/Clustering/aprox2.csv",sep=";")
 aprox3 <- read.csv("Mapas/Clustering/aprox3.csv",sep=";")
+aprox4 <- read.csv("Mapas/Clustering/aprox4.csv",sep=";")
 asocNombresNum<-read.csv("Meteo/estacion_distrito.csv",sep=";", dec=",")
+asocNombresNumContaminacion<-read.csv("Contaminacion/estacion_distrito.csv",sep=";", dec=",")
+
+
 x<-rep(NA,nrow(aprox1))
 y<-rep(NA,nrow(aprox1))
 aprox1<-cbind(aprox1, x, y)
@@ -54,6 +63,18 @@ for(myrow in 1:nrow(aprox3)){#rellenamos coordenadas
   aprox3[myrow,]$x<-myx
   aprox3[myrow,]$y<-myy
 }
+
+
+x<-rep(NA,nrow(aprox4))
+y<-rep(NA,nrow(aprox4))
+aprox4<-cbind(aprox4, x, y)
+for(myrow in 1:nrow(aprox4)){#rellenamos coordenadas
+  myx<-estConContaminacion[estConContaminacion$CODIGO_CORTO==aprox4[myrow,]$numEst,]$LONGITUD
+  myy<-estConContaminacion[estConContaminacion$CODIGO_CORTO==aprox4[myrow,]$numEst,]$LATITUD
+  aprox4[myrow,]$x<-myx
+  aprox4[myrow,]$y<-myy
+}
+
 
 ###Todas las estaciones
 Estacion<-c(102, 103, 106, 107, 109, 110, 112, 8, 24, 35, 36, 38, 54, 56, 58, 59)
@@ -87,6 +108,8 @@ ggmap(mad_map)+geom_point(data=aprox2, aes(x = x , y = y),colour = aprox2$grupoK
 ggmap(mad_map)+geom_point(data=aprox2, aes(x = x , y = y),colour = aprox2$grupoJerarquico, size=3)
 ggmap(mad_map)+geom_point(data=aprox3, aes(x = x , y = y),colour = aprox3$grupoKmeans, size=3)
 ggmap(mad_map)+geom_point(data=aprox3, aes(x = x , y = y),colour = aprox3$grupoJerarquico, size=3)
+ggmap(mad_map)+geom_point(data=aprox4, aes(x = x , y = y),colour = aprox4$grupoKmeans, size=3)
+ggmap(mad_map)+geom_point(data=aprox4, aes(x = x , y = y),colour = aprox4$grupoJerarquico, size=3)
 
 
 Estacion<-c(102, 103, 106, 107, 109, 110, 112, 8, 24, 35, 36, 38, 54, 56, 58, 59)
