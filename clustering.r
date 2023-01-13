@@ -335,7 +335,7 @@ hc <- hclust(dd, method = "ward.D2")
 plot(hc,hang = -1, cex = 0.4)
 grupoJerarquico <- cutree(hc, k = 5)
 plot(hc, cex = 0.6) # plot tree
-rect.hclust(hc, k = 4, border = 2:5) # add rectangle
+rect.hclust(hc, k = 5, border = 2:5) # add rectangle
 
 datosRepresentacion<-cbind(datosRepresentacion,grupoJerarquico)
 
