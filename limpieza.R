@@ -391,7 +391,7 @@ contamina21=contamina21[-c(178), ]
 ################################Magnitud 1 ESTACION 17, todos los meses menos el 1
 contamina21=contamina21[c(-117), ]
 #########################################################
-
+contamina21=contamina21[-c(753,754,755),]
 
 #########################################################
 ########################################################
@@ -474,7 +474,7 @@ for(i in 1:rep){
   dfFin<-rbind(dfFin, a)
   dfMag<-rbind(dfMag, b)
 }
-Estacion<-rep(NA, 365*length(estaciones)) #365*26
+Estacion<-rep(NA, 365*length(estaciones)) #365*24
 #Juntamos
 dfFin<-cbind(dfFin,Estacion,dfMag)
 #Rellenamos con las estaciones
@@ -498,9 +498,9 @@ for(x in 1:nrow(dfFin)){#Recorremos el df a rellenar
     mymag<-magnitudes[mag]
     #Esta sentencia lo que hace es confirmar si es un valor o si no existe en contamina21. 
     #Coge el valor correspondiente a la fila magnitud, estacion y mes, en la columna del dia+4, ya que en el formato de contamina21 los dias empiezan a partir de dicha columna.
-    if(identical(contamina21[((contamina21$magnitud==mymag)&(contamina21$estacion==dfFin[x,]$Estacion) &(contamina21$mes==dfFin[x,]$Mes)),dfFin[x,]$Dia+i], character(0))){
+    if(identical(contamina21[((contamina21$magnitud==mymag)&(contamina21$estacion==dfFin[x,]$Estacion) &(contamina21$mes==dfFin[x,]$Mes)),dfFin[x,]$Dia+i], integer(0))){
       #Si no existe insertamos NA
-     myvecofmags<-c(myvecofmags,NA)
+      myvecofmags<-c(myvecofmags,NA)
     }
     else{
       myvecofmags<-c(myvecofmags,contamina21[((contamina21$magnitud==mymag)&(contamina21$estacion==dfFin[x,]$Estacion) &(contamina21$mes==dfFin[x,]$Mes)),dfFin[x,]$Dia+i])
@@ -510,7 +510,6 @@ for(x in 1:nrow(dfFin)){#Recorremos el df a rellenar
   #Ponemos los valores del vector en su posiciony
   dfFin[x,c(6:10)]<-myvecofmags
 }
-
 
 
 #Exportamos el nuevo dataframe
