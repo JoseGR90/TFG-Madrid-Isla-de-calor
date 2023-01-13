@@ -30,6 +30,8 @@ aprox1 <- read.csv("Mapas/Clustering/aprox1.csv",sep=";")
 aprox2 <- read.csv("Mapas/Clustering/aprox2.csv",sep=";")
 aprox3 <- read.csv("Mapas/Clustering/aprox3.csv",sep=";")
 aprox4 <- read.csv("Mapas/Clustering/aprox4.csv",sep=";")
+aprox5 <- read.csv("Mapas/Clustering/aprox5.csv",sep=";")
+
 asocNombresNum<-read.csv("Meteo/estacion_distrito.csv",sep=";", dec=",")
 asocNombresNumContaminacion<-read.csv("Contaminacion/estacion_distrito.csv",sep=";", dec=",")
 
@@ -75,6 +77,16 @@ for(myrow in 1:nrow(aprox4)){#rellenamos coordenadas
   aprox4[myrow,]$y<-myy
 }
 
+x<-rep(NA,nrow(aprox5))
+y<-rep(NA,nrow(aprox5))
+aprox5<-cbind(aprox5, x, y)
+for(myrow in 1:nrow(aprox5)){#rellenamos coordenadas
+  myx<-estConContaminacion[estConContaminacion$CODIGO_CORTO==aprox5[myrow,]$numEst,]$LONGITUD
+  myy<-estConContaminacion[estConContaminacion$CODIGO_CORTO==aprox5[myrow,]$numEst,]$LATITUD
+  aprox5[myrow,]$x<-myx
+  aprox5[myrow,]$y<-myy
+}
+
 
 ###Todas las estaciones
 Estacion<-c(102, 103, 106, 107, 109, 110, 112, 8, 24, 35, 36, 38, 54, 56, 58, 59)
@@ -110,6 +122,8 @@ ggmap(mad_map)+geom_point(data=aprox3, aes(x = x , y = y),colour = aprox3$grupoK
 ggmap(mad_map)+geom_point(data=aprox3, aes(x = x , y = y),colour = aprox3$grupoJerarquico, size=3)
 ggmap(mad_map)+geom_point(data=aprox4, aes(x = x , y = y),colour = aprox4$grupoKmeans, size=3)
 ggmap(mad_map)+geom_point(data=aprox4, aes(x = x , y = y),colour = aprox4$grupoJerarquico, size=3)
+ggmap(mad_map)+geom_point(data=aprox5, aes(x = x , y = y),colour = aprox5$grupoKmeans, size=3)
+ggmap(mad_map)+geom_point(data=aprox5, aes(x = x , y = y),colour = aprox5$grupoJerarquico, size=3)
 
 
 Estacion<-c(102, 103, 106, 107, 109, 110, 112, 8, 24, 35, 36, 38, 54, 56, 58, 59)

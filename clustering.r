@@ -280,17 +280,17 @@ asocNombresNum<-read.csv("Contaminacion/estacion_distrito.csv",sep=";", dec=",")
 
 vecEst<-unique(contamina21$Estacion)
 sapply(contamina21, function(x) sum(is.na(x)))
-dfFirst<-subset(contamina21,contamina21$Estacion %in% vecEst)
-sapply(dfFirst, function(x) sum(is.na(x)))
+dfFourth<-subset(contamina21,contamina21$Estacion %in% vecEst)
+sapply(dfFourth, function(x) sum(is.na(x)))
 #Quitamos las magnitudes 8 y 9 que tienen muchos NA
-dfFirst<-dfFirst[,-c(6,8,9,10)]
+dfFourth<-dfFourth[,-c(6,8,9,10)]
 
 
 #Ahora por estacion vamos a sacar la media de sus magnitudes.
 dfMeans<-NULL#dataframe con las medias de las magnitudes de cada estacion
-for(estacion in unique(dfFirst$Estacion)){
+for(estacion in unique(dfFourth$Estacion)){
   estMean<-NULL
-  a<-dfFirst[dfFirst$Estacion==estacion, ]
+  a<-dfFourth[dfFourth$Estacion==estacion, ]
   estMean<-colMeans(a[6], na.rm=TRUE)
   dfMeans<-rbind(dfMeans,c(estacion,estMean))
 }
@@ -344,3 +344,78 @@ datosRepresentacion<-cbind(datosRepresentacion,grupoJerarquico)
 write.csv2(datosRepresentacion, "Mapas/Clustering/aprox4.csv", row.names = FALSE)
 
 ###########################################FIN 4ª Aproximacion
+
+
+
+#####################################Aproximación 5
+rm(list=ls())
+contamina21<-read.csv("Contaminacion/Diario/contaminaDiario21_byDay.csv",sep=";", dec=",")
+asocNombresNum<-read.csv("Contaminacion/estacion_distrito.csv",sep=";", dec=",")
+
+#En esta aproximación usaremos las magnitudes 8, 9 y 10, de las estaciones (8,24,38,47,48,50,56)
+
+vecEst<-c(8,24,38,47,48,50,56)
+sapply(contamina21, function(x) sum(is.na(x)))
+dfFifth<-subset(contamina21,contamina21$Estacion %in% vecEst)
+sapply(dfFifth, function(x) sum(is.na(x)))
+#Quitamos las magnitudes 8 y 9 que tienen muchos NA
+dfFifth<-dfFifth[,-c(6,10)]
+
+
+#Ahora por estacion vamos a sacar la media de sus magnitudes.
+dfMeans<-NULL#dataframe con las medias de las magnitudes de cada estacion
+for(estacion in unique(dfFifth$Estacion)){
+  estMean<-NULL
+  a<-dfFifth[dfFifth$Estacion==estacion, ]
+  estMean<-colMeans(a[6:8], na.rm=TRUE)
+  dfMeans<-rbind(dfMeans,c(estacion,estMean))
+}
+dfMeans<-data.frame(dfMeans)
+names(dfMeans)[1] <- 'Estacion'
+Nombre<-rep(NA,length(vecEst))
+dfMeans<-cbind(Nombre,dfMeans)
+for(myrow in 1:nrow(dfMeans)){#añadimos el nombre a la estacion
+  dfMeans[myrow,]$Nombre<-asocNombresNum[asocNombresNum$ESTACION==dfMeans[myrow,]$Estacion,]$NomEst
+}
+
+
+#Kmeans
+#Una vez que tenemos rellenado el dataframe al completo escalamos los datos
+myKmeans<-data.frame(scale(dfMeans[3:5]))
+#Ahora vamos a calcular el numero optimo de clusters para el kMeans
+#Para ello recurrimos al diagrama del codo.
+#fviz_nbclust(myKmeans, kmeans, method = "wss")#No funciona ya que se generan mas centros de clusters que filas.
+set.seed(123)
+
+kmeansResults<-kmeans(na.omit(myKmeans), centers=4)
+#Inercia entre grupos, nos dice la varianza entre los grupos, cuanto mayor mejor es la clasificación. Valor a maximizar.
+kmeansResults$betweenss
+#Inercia intragrupos, nos indica como de agrupados esta cada punto dentro de cada grupo, cuanto menor, mejor.
+kmeansResults$withinss
+#Inercia total intragrupos, es un valor a minimizar, cuanto menor es mejor.
+kmeansResults$tot.withinss
+
+estacion<-dfMeans$Nombre
+numEst<-dfMeans$Estacion
+grupoKmeans<-kmeansResults$cluster
+datosRepresentacion<-data.frame(estacion, numEst, grupoKmeans)
+
+ggplot(datosRepresentacion)+
+  geom_point(mapping=aes(x=grupoKmeans, y=estacion), color=grupoKmeans, size=1)
+
+#Hierarchical Clustering 
+dfMeansNames <- dfMeans[,-1]
+rownames(dfMeansNames) <- dfMeans[,1]
+dd <- dist(dfMeansNames, method = "euclidean")
+hc <- hclust(dd, method = "ward.D2")
+plot(hc,hang = -1, cex = 0.4)
+grupoJerarquico <- cutree(hc, k = 4)
+plot(hc, cex = 0.6) # plot tree
+rect.hclust(hc, k = 4, border = 2:5) # add rectangle
+
+datosRepresentacion<-cbind(datosRepresentacion,grupoJerarquico)
+
+
+#Exportamos lo sresultados del clustering
+write.csv2(datosRepresentacion, "Mapas/Clustering/aprox5.csv", row.names = FALSE)
+
