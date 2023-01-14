@@ -14,6 +14,10 @@ VALNA<-read.csv("Meteo/Diario/datosInvalidosDiarios.csv",sep=";", dec=",")#csv q
 
 #Fallos mensuales por estacion y magnitud, con esta gráfica se pretende saber como se reparten los
 #datos nulos regogidos por la tupla(estación, magnitud, mes)
+
+hist(x = VALNA$contInv,freq=FALSE, main = "Histograma de contInv")
+lines(density(VALNA$contInv),col="red",lwd=2)
+
 plotNA<-ggplot(data.frame(VALNA),aes(x=contInv)) +
   geom_density(fill="red", color="red")+
   xlim(-1,10)+
@@ -80,6 +84,11 @@ VALNA<-read.csv("Contaminacion/Diario/datosInvalidosDiarios.csv",sep=";", dec=",
 
 #Fallos mensuales por estacion y magnitud, con esta gráfica se pretende saber como se reparten los
 #datos nulos regogidos por la tupla(estación, magnitud, mes)
+
+
+hist(x = VALNA$contInv,freq=FALSE, main = "Histograma de contInv")
+lines(density(VALNA$contInv),col="red",lwd=2)
+
 plotNA<-ggplot(data.frame(VALNA),aes(x=contInv)) +
   geom_density(fill="red", color="red")+
   xlim(-1,10)+
