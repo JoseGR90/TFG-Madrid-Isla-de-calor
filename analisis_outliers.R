@@ -64,6 +64,8 @@ ggplot(data.frame(df81,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitu
   scale_alpha_manual(values=c(1,0.1)) +
   ggtitle("Analisis outliers Velocidad viento") +
   labs(x = "Magnitud",y = "Distribucion")
+#Histograma
+hist(x = df81[,2], main = "Histograma Velocidad viento")
 
 
 #Boxplot direccion viento
@@ -77,6 +79,8 @@ ggplot(data.frame(df82,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitu
   ) +
   ggtitle("Analisis outliers direccion del viento") +
   labs(x = "Magnitud",y = "Distribucion")
+#Histograma
+hist(x = df82[,2], main = "Histograma direccion del viento")
 
 #Boxplot temperatura
 ggplot(data.frame(df83,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitud))) +
@@ -89,6 +93,8 @@ ggplot(data.frame(df83,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitu
   ) +
   ggtitle("Analisis outliers temperaturas") +
   labs(x = "Magnitud", y = "Distribucion")
+#Histograma
+hist(x = df83[,2], main = "Histograma temperaturas")
 
 
 #Boxplot humedad relativa
@@ -102,6 +108,8 @@ ggplot(data.frame(df86,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitu
   ) +
   ggtitle("Analisis outliers humedad relativa") +
   labs(x = "Magnitud", y = "Distribucion")
+#Histograma
+hist(x = df86[,2], main = "Histograma humedad relativa")
 
 
 #Boxplot presion barometrica
@@ -115,6 +123,8 @@ ggplot(data.frame(df87,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitu
   ) +
   ggtitle("Analisis outliers presion barometrica") +
   labs(x = "Magnitud", y = "Distribucion")
+#Histograma
+hist(x = df87[,2], main = "Histograma presion barometrica")
 
 
 #Boxplot radiacion solar
@@ -128,6 +138,8 @@ ggplot(data.frame(df88,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitu
   ) +
   ggtitle("Analisis outliers radiacion solar") +
   labs(x = "Magnitud", y = "Distribucion")
+#Histograma
+hist(x = df88[,2], main = "Histograma radiacion solar")
 
 
 #Boxplot precipitacion
@@ -141,6 +153,8 @@ ggplot(data.frame(df89,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitu
   ) +
   ggtitle("Analisis outliers precipitaciones") +
   labs(x = "Magnitud", y = "Distribucion")
+#Histograma
+hist(x = df89[,2], main = "Histograma precipitaciones")
 
 
 #Representacion global
@@ -211,6 +225,8 @@ ggplot(data.frame(df1,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitud
   scale_alpha_manual(values=c(1,0.1)) +
   ggtitle("Analisis outliers de Dioxido de Azufre ") +
   labs(x = "Magnitud",y = "Distribucion")
+#Histograma
+hist(x = df1[,2], main = "Histograma Dioxido de Azufre")
 
 
 #Boxplot Dioxido de Nitrogeno
@@ -224,6 +240,8 @@ ggplot(data.frame(df8,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitud
   ) +
   ggtitle("Analisis outliers de Dioxido de Nitrogeno ") +
   labs(x = "Magnitud",y = "Distribucion")
+#Histograma
+hist(x = df8[,2], main = "Histograma Dioxido de Nitrogeno")
 
 #Boxplot Particulas 2.5
 ggplot(data.frame(df9,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitud))) +
@@ -236,6 +254,8 @@ ggplot(data.frame(df9,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitud
   ) +
   ggtitle("Analisis outliers de Particulas 2.5") +
   labs(x = "Magnitud", y = "Distribucion")
+#Histograma
+hist(x = df9[,2], main = "Histograma Particulas 2.5")
 
 
 #Boxplot Particulas 10
@@ -249,6 +269,8 @@ ggplot(data.frame(df10,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitu
   ) +
   ggtitle("Analisis outliers de Particulas 10") +
   labs(x = "Magnitud", y = "Distribucion")
+#Histograma
+hist(x = df10[,2], main = "Histograma Particulas 10")
 
 
 #Boxplot Ozono
@@ -262,6 +284,8 @@ ggplot(data.frame(df14,na.rm=TRUE), aes(x=magnitud, y=valor, fill=factor(magnitu
   ) +
   ggtitle("Analisis outliers de Ozono") +
   labs(x = "Magnitud", y = "Distribucion")
+#Histograma
+hist(x = df14[,2], main = "Histograma Ozono")
 
 
 #Representacion global
