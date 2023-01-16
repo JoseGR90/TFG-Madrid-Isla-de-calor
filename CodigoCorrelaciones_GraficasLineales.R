@@ -19,43 +19,49 @@ estaciones<-unique(meteo21[c("Estacion")])
 #Recorremos el dataframe con los datos y vamos almacenando en un vector de 365 posiciones los 
 #valores obtenidos a lo largo del año.
 
-
+#Grafica magnitud velocidad viento
 ggplot(meteo21[meteo21$Estacion=="102",], aes(x=as.Date(Fecha), y = X81, group=1)) +
   geom_line(color="grey")+
   geom_point(shape=21, color="black", fill="#69b3a2", size=0.5)+
   labs(x = "Días del año", y = "m/s") +
   ggtitle("Evolución de la velocidad del viento Moratalaz")
 
+#Grafica magnitud direccion del viento
 ggplot(meteo21[meteo21$Estacion=="102",], aes(x=as.Date(Fecha), y = X82, group=1)) +
   geom_line(color="grey")+
   geom_point(shape=21, color="black", fill="#69b3a2", size=0.5)+
   labs(x = "Días del año", y = "0º-360º") +
   ggtitle("Evolución de la direccion del viento Moratalaz")
 
+#Grafica temperatura
 ggplot(meteo21[meteo21$Estacion=="102",], aes(x=as.Date(Fecha), y = X83, group=1)) +
   geom_line(color="grey")+
   geom_point(shape=21, color="black", fill="#69b3a2", size=0.5)+
   labs(x = "Días del año", y = "ºC") +
   ggtitle("Evolución de las temperaturas Moratalaz")
 
+#Grafica humedad relativa
 ggplot(meteo21[meteo21$Estacion=="102",], aes(x=as.Date(Fecha), y = X86, group=1)) +
   geom_line(color="grey")+
   geom_point(shape=21, color="black", fill="#69b3a2", size=0.5)+
   labs(x = "Días del año", y = "% humedad") +
   ggtitle("Evolución de la humedad relativa Moratalaz")
 
+#Grafica presion barometrica
 ggplot(meteo21[meteo21$Estacion=="102",], aes(x=as.Date(Fecha), y = X87, group=1)) +
   geom_line(color="grey")+
   geom_point(shape=21, color="black", fill="#69b3a2", size=0.5)+
   labs(x = "Días del año", y = "% humedad") +
   ggtitle("Evolución de la presión barométrica Moratalaz")
 
+#Grafica radiacion solar
 ggplot(meteo21[meteo21$Estacion=="102",], aes(x=as.Date(Fecha), y = X88, group=1)) +
   geom_line(color="grey")+
   geom_point(shape=21, color="black", fill="#69b3a2", size=0.5)+
   labs(x = "Días del año", y = "W/m2") +
   ggtitle("Evolución de la radiacion solar Moratalaz")
 
+#Grafica precipitacion
 ggplot(meteo21[meteo21$Estacion=="102",], aes(x=as.Date(Fecha), y = X89, group=1)) +
   geom_line(color="grey")+
   geom_point(shape=21, color="black", fill="#69b3a2", size=0.5)+
@@ -65,6 +71,9 @@ ggplot(meteo21[meteo21$Estacion=="102",], aes(x=as.Date(Fecha), y = X89, group=1
 
 ##################################################################################################
 ##Ahora vamos a ver si hay similitud entre radiacion solar y precipitaciones
+#Lo logico seria que los dias que hay precipitaciones, la radiacion solar sea menor, pero no siempre 
+#que haya poca radiacion solar haya precipitaciones, ya que un dia nuboso sin precipitaciones nos daran 
+#bajos datos de radiacion solar.
 
 dfComp<-NULL
 
@@ -78,6 +87,7 @@ dfComp$Radiacion<-as.numeric(dfComp$Radiacion)
 dfComp$Precipitacion<-as.numeric(dfComp$Precipitacion)
 colors <- c("Radiacion" = "darkred", "Precipitacion" = "steelblue")
 
+#Grafica Radiacion/precipitacion
 ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
   geom_line(aes(y = Radiacion, color="Radiacion"))+ 
   geom_line(aes(y = Precipitacion, color="Precipitacion"))+
@@ -108,6 +118,7 @@ dfComp$Moratalaz<-as.numeric(dfComp$Moratalaz)
 dfComp$CuatroCaminos<-as.numeric(dfComp$CuatroCaminos)
 colors <- c("Moratalaz" = "darkred", "CuatroCaminos" = "steelblue")
 
+#Grafica temperaturas extremas
 ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
   geom_line(aes(y = Moratalaz, color="Moratalaz"))+ 
   geom_line(aes(y = CuatroCaminos, color="CuatroCaminos"))+
@@ -118,9 +129,10 @@ ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
         legend.title = element_text(size=8), #change legend title font size
         legend.text = element_text(size=5))
 
+
 ##################################################################################################
-##Ahora vamos a ver las diferencias entre todas las estaciones
-#
+##Ahora vamos a ver las diferencias de temperatura entre las estaciones 102,103,106,109 y 112
+# quedandonos con estas ya que son las mas extremas tanto por arriba como por abajo
 dfComp<-NULL
 
 my102<-meteo21[meteo21$Estacion=="102",]
@@ -166,7 +178,7 @@ ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
 #vamos a comparar temperatura y ozono
 
 ##################################################################################################
-#######################este esta a medias
+#######################este esta a medias no me muestra ozono, si acaso borrarlo
 
 dfComp<-NULL
 my102<-meteo21[meteo21$Estacion=="102",]
@@ -191,7 +203,7 @@ ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
         legend.text = element_text(size=5))
 
 ##################################################################################################
-##Ahora vamos a ver las diferencias entre estaciones de ozono
+##Ahora vamos a ver las diferencias entre estaciones de ozono, si me lo muestra pero no se si es relevante
 #
 dfComp<-NULL
 
