@@ -5,6 +5,7 @@ library(ggplot2)
 library(dplyr)
 library(hrbrthemes)
 meteo21<-read.csv("Meteo/Diario/meteoDiario21_byDay.csv",sep=";",dec=",")
+contamina21<-read.csv("contaminacion/Diario/contaminaDiario21_byDay.csv",sep=";",dec=",")
 #Este archivo es el sacado a partir de la limpieza, en el que los meses que no tienen valores
 #por fallo o mantenimiento son rellenados a NA.
 
@@ -61,8 +62,35 @@ ggplot(meteo21[meteo21$Estacion=="102",], aes(x=as.Date(Fecha), y = X89, group=1
   labs(x = "Días del año", y = "L/m2") +
   ggtitle("Evolución de las precipitaciones Moratalaz")
 
+
 ##################################################################################################
-##Ahora vamos a ver las diferencias entre 2 estaciones, Moratalaz y centro
+##Ahora vamos a ver si hay similitud entre radiacion solar y precipitaciones
+
+dfComp<-NULL
+
+my102<-meteo21[meteo21$Estacion=="102",]
+dfComp<-cbind(my102$Fecha, my102$X88, my102$X89)
+dfComp<-data.frame(dfComp)
+names(dfComp)[1] <- 'Fecha'
+names(dfComp)[2] <- 'Radiacion'
+names(dfComp)[3] <- 'Precipitacion'
+dfComp$Radiacion<-as.numeric(dfComp$Radiacion)
+dfComp$Precipitacion<-as.numeric(dfComp$Precipitacion)
+colors <- c("Radiacion" = "darkred", "Precipitacion" = "steelblue")
+
+ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
+  geom_line(aes(y = Radiacion, color="Radiacion"))+ 
+  geom_line(aes(y = Precipitacion, color="Precipitacion"))+
+  labs(x = "Días del año", y = "W/L m2",  color = "Legend") +
+  ggtitle("Correlacion LLuvia Radiacion")+
+  scale_color_manual(values = colors)+
+  theme(legend.key.size = unit(0.3, 'cm'),
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=5))
+
+
+##################################################################################################
+##Ahora vamos a ver las diferencias entre las temperaturas mas extremas
 ##Por ejemplo, remarcar que las temperaturas están más suavizadas en las estaciones 
 ##más exteriores que en las interiores. Y es que de media las temperaturas de Moratalaz 
 ##(cuyo distrito es exterior y contiene una mayor cantidad de árboles -14.000 contra 36.000- y
@@ -90,11 +118,129 @@ ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
         legend.title = element_text(size=8), #change legend title font size
         legend.text = element_text(size=5))
 
+##################################################################################################
+##Ahora vamos a ver las diferencias entre todas las estaciones
+#
+dfComp<-NULL
+
+my102<-meteo21[meteo21$Estacion=="102",]
+my103<-meteo21[meteo21$Estacion=="103",]
+my106<-meteo21[meteo21$Estacion=="106",]
+my109<-meteo21[meteo21$Estacion=="109",]
+my112<-meteo21[meteo21$Estacion=="112",]
+
+
+dfComp<-cbind(my102$Fecha,my102$X83, my103$X83, my106$X83,my109$X83,my112$X83)
+dfComp<-data.frame(dfComp)
+names(dfComp)[1] <- 'Fecha'
+names(dfComp)[2] <- 'my102'
+names(dfComp)[3] <- 'my103'
+names(dfComp)[4] <- 'my106'
+names(dfComp)[5] <- 'my109'
+names(dfComp)[6] <- 'my112'
+
+dfComp$my102<-as.numeric(dfComp$my102)
+dfComp$my103<-as.numeric(dfComp$my103)
+dfComp$my106<-as.numeric(dfComp$my106)
+dfComp$my109<-as.numeric(dfComp$my109)
+dfComp$my112<-as.numeric(dfComp$my112)
+
+colors <- c("my102" = "magenta", "my103" = "darkred","my106" = "darkblue", "my109" = "aquamarine4")
+#my112 y 109 la temperatura mas alta 106 de las mas bajas
+ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
+  geom_line(aes(y = my102, color="my102"))+ 
+  geom_line(aes(y = my103, color="my103"))+
+  geom_line(aes(y = my106, color="my106"))+
+  geom_line(aes(y = my109, color="my109"))+
+  geom_line(aes(y = my112))+
+  labs(x = "Días del año", y = "ºC",  color = "Legend") +
+  scale_color_manual(values = colors)+
+  theme(legend.key.size = unit(1.9, 'cm'),
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=5))
+
+
+
+#######################################
+#######################################
+#vamos a comparar temperatura y ozono
+
+##################################################################################################
+#######################este esta a medias
+
+dfComp<-NULL
+my102<-meteo21[meteo21$Estacion=="102",]
+my4<-contamina21[contamina21$Estacion=="4",]
+dfComp<-cbind(my102$Fecha, my102$X83, my4$X14)
+dfComp<-data.frame(dfComp)
+names(dfComp)[1] <- 'Fecha'
+names(dfComp)[2] <- 'estacion102'
+names(dfComp)[3] <- 'estacion4'
+dfComp$estacion102<-as.numeric(dfComp$estacion102)
+dfComp$estacion4<-as.numeric(dfComp$estacion4)
+colors <- c("estacion102" = "darkred", "estacion4" = "magenta")
+
+ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
+  geom_line(aes(y = estacion102, color="estacion102"))+ 
+  geom_line(aes(y = estacion4, color="estacion4"))+
+  labs(x = "Días del año", y = "ºC",  color = "Legend") +
+  ggtitle("Temperatura - ozono")+
+  scale_color_manual(values = colors)+
+  theme(legend.key.size = unit(0.3, 'cm'),
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=5))
+
+##################################################################################################
+##Ahora vamos a ver las diferencias entre estaciones de ozono
+#
+dfComp<-NULL
+
+my4<-contamina21[contamina21$Estacion=="4",]
+my8<-contamina21[contamina21$Estacion=="8",]
+my27<-contamina21[contamina21$Estacion=="27",]
+my35<-contamina21[contamina21$Estacion=="35",]
+my57<-contamina21[contamina21$Estacion=="57",]
+
+dfComp<-cbind(my4$Fecha, my4$X14, my8$X14, my27$X14, my35$X14, my57$X14)
+
+dfComp<-data.frame(dfComp)
+names(dfComp)[1] <- 'Fecha'
+names(dfComp)[2] <- 'my4'
+names(dfComp)[3] <- 'my8'
+names(dfComp)[4] <- 'my27'
+names(dfComp)[5] <- 'my35'
+names(dfComp)[6] <- 'my57'
+dfComp$my4<-as.numeric(dfComp$my4)
+dfComp$my8<-as.numeric(dfComp$my8)
+dfComp$my27<-as.numeric(dfComp$my27)
+dfComp$my35<-as.numeric(dfComp$my35)
+dfComp$my57<-as.numeric(dfComp$my57)
+
+
+colors <- c("my4" = "magenta", "my8" = "darkred","my11" = "darkblue", "my16" = "aquamarine4")
+#my112 y 109 la temperatura mas alta 106 de las mas bajas
+ggplot(dfComp, aes(x=as.Date(Fecha), group=1)) +
+  geom_line(aes(y = my4, color="my4"))+ 
+  geom_line(aes(y = my8, color="my8"))+
+  geom_line(aes(y = my57, color="my11"))+
+  geom_line(aes(y = my27, color="my16"))+
+  geom_line(aes(y = my35))+
+  labs(x = "Días del año", y = "o3",  color = "Legend") +
+  scale_color_manual(values = colors)+
+  theme(legend.key.size = unit(1.9, 'cm'),
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=5))
+
+
+
+
+
 
 ################################################################################################
 #Lo que vamos a hacer ahora es ver si existen correlaciones entre las distintas variables.
 #Correlación de temperaturas y zonas verdes. Para ello primero sacamos la media de las 
 #temperaturas por estaciones, ignorando la primera columna que es el id de la estacion.
+dfFinal<-NULL
 correTempVerde<-data.frame(estacion=dfFinal[,1], Means=rowMeans(dfFinal[,c(2:373)], na.rm=TRUE))
 
 estacionDistrito<-read.csv("Meteo/estacion_distrito.csv",sep=";",dec=",")
@@ -127,7 +273,7 @@ ggplot(aa, aes(x=Means, y=masaArb)) +
         axis.ticks.y=element_blank())+
   labs(x = "Media de temperaturas ºC", y = "Masa Arbórea m2") +
   ggtitle("Relación masa arborea y temperaturas")
-  
+
 
 ################################################################
 #Correlación temperaturas y humedad relativa.
@@ -139,11 +285,11 @@ found<-NULL#Booleano que indica si la estacion analizada tiene o no valores para
 for(estacion in 1:nrow(estaciones)){#Recorremos las 26 estaciones
   est<-estaciones[estacion,] 
   vec<-c(vec,est)
-  for(row1 in 1:nrow(METEO21)){#Por cada estacion recorremos el dataframe con los datos para ir recolectandolos
-    if((METEO21[row1,]$estacion == est)&(METEO21[row1,]$magnitud==83)){#En este caso serviría para analizar la magnitud 81
+  for(row1 in 1:nrow(meteo21)){#Por cada estacion recorremos el dataframe con los datos para ir recolectandolos
+    if((meteo21[row1,]$estacion == est)&(meteo21[row1,]$magnitud==81)){#En este caso serviría para analizar la magnitud 81
       found<-TRUE
       #Si lo encontramos vamos recolectando en vec todos los valores. al final debe tener 372 (31 dias*12 meses)
-      a<-METEO21[row1,c(5:35)]
+      a<-meteo21[row1,c(5:35)]
       for(day in 1:ncol(a)){
         vec<-c(vec,a[,day])
       }
@@ -162,11 +308,11 @@ found<-NULL#Booleano que indica si la estacion analizada tiene o no valores para
 for(estacion in 1:nrow(estaciones)){#Recorremos las 26 estaciones
   est<-estaciones[estacion,] 
   vec<-c(vec,est)
-  for(row1 in 1:nrow(METEO21)){#Por cada estacion recorremos el dataframe con los datos para ir recolectandolos
-    if((METEO21[row1,]$estacion == est)&(METEO21[row1,]$magnitud==86)){#En este caso serviría para analizar la magnitud 81
+  for(row1 in 1:nrow(meteo21)){#Por cada estacion recorremos el dataframe con los datos para ir recolectandolos
+    if((meteo21[row1,]$estacion == est)&(meteo21[row1,]$magnitud==86)){#En este caso serviría para analizar la magnitud 81
       found<-TRUE
       #Si lo encontramos vamos recolectando en vec todos los valores. al final debe tener 372 (31 dias*12 meses)
-      a<-METEO21[row1,c(5:35)]
+      a<-meteo21[row1,c(5:35)]
       for(day in 1:ncol(a)){
         vec<-c(vec,a[,day])
       }
@@ -194,4 +340,6 @@ ggplot(aa, aes(x=Temps, y=Humedad)) +
         axis.ticks.y=element_blank())+
   labs(x = "Media de temperaturas ºC", y = "Media Humedad relativa") +
   ggtitle("Relación temperaturas y humedad")
+
+
 
