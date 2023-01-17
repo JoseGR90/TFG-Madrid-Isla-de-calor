@@ -7,3 +7,7 @@ Este problema -más apreciable en horas nocturnas- se debe a una gran variedad d
 Madrid es una clara isla de calor, ya no solo por ser la mayor urbe del país y de las mayores de Europa, sino porque es apreciable el aumento de las temperaturas esta última década. 
 
 Es por esto por lo que este trabajo trata de estudiar las relaciones entre los distintos factores que pueden provocar la variación de temperatura en el área metropolitana de Madrid.
+
+
+
+Licencia Creative Commons: CC BY-NC-ND
